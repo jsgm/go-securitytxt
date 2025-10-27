@@ -1,0 +1,7 @@
+package securitytxt
+
+// TO-DO:
+// -----BEGIN PGP SIGNED MESSAGE-----
+// Hash: SHA256
+// -----BEGIN PGP SIGNATURE-----
+// -----END PGP SIGNATURE-----
