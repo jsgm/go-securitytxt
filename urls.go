@@ -6,10 +6,14 @@ import (
 )
 
 func (s URLSet) First() *url.URL {
-	if len(s) == 0 {
+	if s.Empty() {
 		return nil
 	}
 	return s[0]
+}
+
+func (s URLSet) Empty() bool {
+	return len(s) == 0
 }
 
 func appendURL(target *URLSet, value string) error {
