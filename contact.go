@@ -67,10 +67,16 @@ func parseContact(v string) (Contact, []error) {
 	}
 	switch {
 	case strings.HasPrefix(v, "mailto:"):
+		r := strings.NewReplacer(
+			"mailto:", "",
+			"(at)", "@",
+		)
+		parsedValue := r.Replace(v)
+
 		return Contact{
 			Type:     ContactEmail,
 			RawValue: v,
-			Value:    v,
+			Value:    parsedValue,
 			Priority: 0,
 		}, nil
 
