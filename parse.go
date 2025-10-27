@@ -30,20 +30,11 @@ func parse(content string) (*SecurityTxt, error) {
 
 	data := &SecurityTxt{}
 
-	allowedKeys := map[string]bool{
-		"Canonical":           true,
-		"Policy":              true,
-		"Contact":             true,
-		"Hiring":              true,
-		"Acknowledgments":     true,
-		"Preferred-Languages": true,
-		"Expires":             true,
-		"Encryption":          true,
-	}
-
 	scanner := bufio.NewScanner(strings.NewReader(content))
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
+
+		fmt.Println(line)
 
 		if len(line) == 0 {
 			continue
@@ -61,10 +52,6 @@ func parse(content string) (*SecurityTxt, error) {
 		}
 
 		key := strings.TrimSpace(parts[0])
-		if !allowedKeys[key] {
-			continue
-		}
-
 		value := strings.TrimSpace(parts[1])
 
 		switch key {
@@ -98,7 +85,7 @@ func parse(content string) (*SecurityTxt, error) {
 		case "Preferred-Languages":
 			languages := strings.Split(value, ",")
 			for _, language := range languages {
-				language = strings.ToLower(language)
+				language = strings.TrimSpace(strings.ToLower(language))
 				if len(language) == 2 && iso6391.ValidCode(language) {
 					data.preferredLanguages = append(data.preferredLanguages, iso6391.FromCode(language))
 				}
@@ -108,34 +95,37 @@ func parse(content string) (*SecurityTxt, error) {
 			// Must be uppercase for 'z' -> 'Z' (RFC3339).
 			t, err := time.Parse(time.RFC3339, strings.ToUpper(value))
 			if err == nil {
-				data.Expires = &t
+				data.expires = &t
 			} else {
 				fmt.Println(err)
 			}
 
 		case "Hiring":
-			u, err := url.Parse(value)
-			if err == nil && u.Scheme != "" && u.Host != "" {
-				data.Hiring = append(data.Hiring, u)
+			e := appendURL(&data.hiring, value)
+			if e != nil {
+				data.errors = append(data.errors, e)
 			}
 
 		case "Policy":
-			u, err := url.Parse(value)
-			if err == nil && u.Scheme != "" && u.Host != "" {
-				data.Policy = append(data.Policy, u)
+			e := appendURL(&data.policy, value)
+			if e != nil {
+				data.errors = append(data.errors, e)
 			}
 
 		case "Acknowledgments":
-			u, err := url.Parse(value)
-			if err == nil && u.Scheme != "" && u.Host != "" {
-				data.Acknowledgments = append(data.Acknowledgments, u)
+			e := appendURL(&data.acknowledgments, value)
+			if e != nil {
+				data.errors = append(data.errors, e)
 			}
 
 		case "Canonical":
-			u, err := url.Parse(value)
-			if err == nil && u.Scheme != "" && u.Host != "" {
-				data.Canonical = append(data.Canonical, u)
+			e := appendURL(&data.canonical, value)
+			if e != nil {
+				data.errors = append(data.errors, e)
 			}
+
+		default:
+			data.errors = append(data.errors, fmt.Errorf("unknown key %s", key))
 		}
 
 	}

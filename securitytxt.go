@@ -1,26 +1,23 @@
 package securitytxt
 
 import (
-	"errors"
 	"net/url"
 	"time"
 
 	iso6391 "github.com/emvi/iso-639-1"
 )
 
-var (
-	ErrContactNotSet = errors.New("contact method is required, but not set")
-)
+type URLSet []*url.URL
 
 type SecurityTxt struct {
 	// security.txt fields
-	Acknowledgments    []*url.URL
-	Canonical          []*url.URL
-	Contact            []string
-	Encryption         []string
-	Expires            *time.Time
-	Hiring             []*url.URL
-	Policy             []*url.URL
+	acknowledgments    URLSet
+	canonical          URLSet
+	contact            []string
+	encryption         []string
+	expires            *time.Time
+	hiring             URLSet
+	policy             URLSet
 	preferredLanguages []iso6391.Language
 
 	// File comments
