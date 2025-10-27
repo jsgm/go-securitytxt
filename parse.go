@@ -102,6 +102,8 @@ func parse(content string) (*SecurityTxt, error) {
 			}
 
 		default:
+			// TO-DO: Custom error for 'Expiration' should be 'Expires'
+
 			data.Errors = append(data.Errors, fmt.Errorf(`unknown key %q`, key))
 		}
 
