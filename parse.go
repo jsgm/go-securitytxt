@@ -70,7 +70,6 @@ func parse(content string) (*SecurityTxt, error) {
 			}
 
 		case "Expires":
-			// Must be uppercase for 'z' -> 'Z' (RFC3339).
 			t, err := time.Parse(time.RFC3339, strings.ToUpper(value))
 			if err == nil {
 				data.Expires = &t
@@ -113,4 +112,8 @@ func parse(content string) (*SecurityTxt, error) {
 	}
 
 	return data, nil
+}
+
+func (s *SecurityTxt) Valid() bool {
+	return len(s.Errors) == 0
 }
