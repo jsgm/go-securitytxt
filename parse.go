@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"net/url"
 	"strings"
 	"time"
 
@@ -34,20 +33,18 @@ func parse(content string) (*SecurityTxt, error) {
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 
-		fmt.Println(line)
-
 		if len(line) == 0 {
 			continue
 		}
 
 		if strings.HasPrefix(line, "#") {
-			data.comments = append(data.comments, line)
+			// data.comments = append(data.comments, line)
 			continue
 		}
 
 		parts := strings.SplitN(line, ":", 2)
 		if len(parts) != 2 {
-			data.errors = append(data.errors, errors.New("unrecognized line format"))
+			data.Errors = append(data.Errors, errors.New("unrecognized line format"))
 			continue
 		}
 
@@ -56,38 +53,19 @@ func parse(content string) (*SecurityTxt, error) {
 
 		switch key {
 		case "Encryption":
-			fmt.Println(value)
+			// fmt.Println(value)
 
 		case "Contact":
-			switch {
-			case strings.HasPrefix(value, "mailto:"):
-				addr := strings.TrimPrefix(value, "mailto:")
-
-				if decoded, err := url.PathUnescape(addr); err == nil {
-					addr = decoded
-				}
-
-				fmt.Println("IsEmail: " + addr)
-
-			case strings.HasPrefix(value, "tel:"):
-				phone := strings.TrimPrefix(value, "tel:")
-				phone = strings.ReplaceAll(phone, "-", "")
-				phone = strings.ReplaceAll(phone, " ", "")
-				fmt.Println("IsPhone: " + phone)
-
-			case strings.HasPrefix(value, "http://") || strings.HasPrefix(value, "https://"):
-				fmt.Println("IsURL: " + value)
-
-			default:
-				fmt.Println("Error")
-			}
+			newContact, errors := parseContact(value)
+			data.Contact = append(data.Contact, newContact)
+			data.Errors = append(data.Errors, errors...)
 
 		case "Preferred-Languages":
 			languages := strings.Split(value, ",")
 			for _, language := range languages {
 				language = strings.TrimSpace(strings.ToLower(language))
 				if len(language) == 2 && iso6391.ValidCode(language) {
-					data.preferredLanguages = append(data.preferredLanguages, iso6391.FromCode(language))
+					data.PreferredLanguages = append(data.PreferredLanguages, iso6391.FromCode(language))
 				}
 			}
 
@@ -95,39 +73,43 @@ func parse(content string) (*SecurityTxt, error) {
 			// Must be uppercase for 'z' -> 'Z' (RFC3339).
 			t, err := time.Parse(time.RFC3339, strings.ToUpper(value))
 			if err == nil {
-				data.expires = &t
+				data.Expires = &t
 			} else {
-				fmt.Println(err)
+				data.Errors = append(data.Errors, err)
 			}
 
 		case "Hiring":
-			e := appendURL(&data.hiring, value)
+			e := appendURL(&data.Hiring, value)
 			if e != nil {
-				data.errors = append(data.errors, e)
+				data.Errors = append(data.Errors, e)
 			}
 
 		case "Policy":
-			e := appendURL(&data.policy, value)
+			e := appendURL(&data.Policy, value)
 			if e != nil {
-				data.errors = append(data.errors, e)
+				data.Errors = append(data.Errors, e)
 			}
 
 		case "Acknowledgments":
-			e := appendURL(&data.acknowledgments, value)
+			e := appendURL(&data.Acknowledgments, value)
 			if e != nil {
-				data.errors = append(data.errors, e)
+				data.Errors = append(data.Errors, e)
 			}
 
 		case "Canonical":
-			e := appendURL(&data.canonical, value)
+			e := appendURL(&data.Canonical, value)
 			if e != nil {
-				data.errors = append(data.errors, e)
+				data.Errors = append(data.Errors, e)
 			}
 
 		default:
-			data.errors = append(data.errors, fmt.Errorf("unknown key %s", key))
+			data.Errors = append(data.Errors, fmt.Errorf(`unknown key %q`, key))
 		}
 
+	}
+
+	if len(data.PreferredLanguages) == 0 {
+		data.PreferredLanguages = []iso6391.Language{iso6391.FromCode("en")}
 	}
 
 	return data, nil

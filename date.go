@@ -8,7 +8,7 @@ func (s *SecurityTxt) HasExpiration() bool {
 
 func (s *SecurityTxt) Expiration() *time.Time {
 	// Returns the actual expiration date
-	return s.expires
+	return s.Expires
 }
 
 func (s *SecurityTxt) Expired() bool {
@@ -17,7 +17,7 @@ func (s *SecurityTxt) Expired() bool {
 		// No expiration date means "not expired"
 		return false
 	}
-	return time.Now().After(*s.expires)
+	return time.Now().After(*s.Expires)
 }
 
 func (s *SecurityTxt) DaysUntilExpiration() int {

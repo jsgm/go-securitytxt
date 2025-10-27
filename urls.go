@@ -12,22 +12,6 @@ func (s URLSet) First() *url.URL {
 	return s[0]
 }
 
-func (s *SecurityTxt) Canonicals() URLSet {
-	return s.canonical
-}
-
-func (s *SecurityTxt) Hiring() URLSet {
-	return s.hiring
-}
-
-func (s *SecurityTxt) Acknowledgments() URLSet {
-	return s.acknowledgments
-}
-
-func (s *SecurityTxt) Policies() URLSet {
-	return s.policy
-}
-
 func appendURL(target *URLSet, value string) error {
 	u, err := url.Parse(value)
 	if err != nil || u.Scheme == "" || u.Host == "" {

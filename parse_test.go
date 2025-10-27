@@ -9,6 +9,11 @@ import (
 func TestParse(t *testing.T) {
 	assert := assert.New(t)
 
-	_, err := FromString("")
-	assert.Error(err)
+	f, _ := FromString(`
+		Contact: email@example.com
+		Signature: https://example.txt.sig
+	`)
+
+	assert.Len(f.Errors, 1)
+	assert.Equal("unknown key \"Signature\"", f.Errors[0].Error())
 }

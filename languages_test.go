@@ -9,28 +9,28 @@ import (
 func TestLanguages(t *testing.T) {
 	assert := assert.New(t)
 
-	sectxt, _ := FromString(`
+	f, _ := FromString(`
 		Contact: mailto:test@example.com
 		Expires: Test
 		Preferred-Languages: en, es, fr
 	`)
 
-	assert.Equal(sectxt.Language().Code, "en")
-	assert.NotEqual(sectxt.Language().Code, "es")
+	assert.Equal(f.Language().Code, "en")
+	assert.NotEqual(f.Language().Code, "es")
 
-	assert.True(sectxt.ContainsLanguage("en"))
-	assert.False(sectxt.ContainsLanguage("de"))
+	assert.True(f.ContainsLanguage("en"))
+	assert.False(f.ContainsLanguage("de"))
 
-	assert.Equal(len(sectxt.Languages()), 3)
-	assert.NotEqual(len(sectxt.Languages()), 2)
+	assert.Len(f.PreferredLanguages, 3)
+	assert.NotEqual(len(f.PreferredLanguages), 2)
 
-	sectxt, _ = FromString(`
+	f, _ = FromString(`
 		Contact: mailto:test@example.com
 		Expires: Test
 		Preferred-Languages:
 	`)
-	assert.Equal(sectxt.Language().Code, "en")
-	assert.Equal(len(sectxt.Languages()), 1)
-	assert.True(sectxt.ContainsLanguage("en"))
-	assert.True(sectxt.ContainsLanguage("en"))
+	assert.Equal(f.Language().Code, "en")
+	assert.Equal(len(f.PreferredLanguages), 1)
+	assert.True(f.ContainsLanguage("en"))
+	assert.True(f.ContainsLanguage("en"))
 }

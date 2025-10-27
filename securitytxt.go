@@ -11,18 +11,18 @@ type URLSet []*url.URL
 
 type SecurityTxt struct {
 	// security.txt fields
-	acknowledgments    URLSet
-	canonical          URLSet
-	contact            []string
-	encryption         []string
-	expires            *time.Time
-	hiring             URLSet
-	policy             URLSet
-	preferredLanguages []iso6391.Language
+	Acknowledgments    URLSet
+	Canonical          URLSet
+	Contact            []Contact
+	Encryption         []string
+	Expires            *time.Time
+	Hiring             URLSet
+	Policy             URLSet
+	PreferredLanguages []iso6391.Language
 
-	// File comments
-	comments []string
+	// Conformance flag according to RFC 9116
+	IsValid bool
 
 	// Contains parsing errors. For example, if the file is missing the "Contact:" field, an error will be stored here.
-	errors []error
+	Errors []error
 }

@@ -9,13 +9,13 @@ import (
 func TestHiring(t *testing.T) {
 	assert := assert.New(t)
 
-	sectxt, _ := FromString(`
+	f, _ := FromString(`
 		Contact: mailto:test@example.com
 		Hiring: https://example.com
 		Hiring: https://example.net
 		Hiring: https://example.com
 	`)
 
-	assert.Equal(len(sectxt.Hiring()), 3)
-	assert.Equal(sectxt.Hiring().First().String(), "https://example.com")
+	assert.Equal(len(f.Hiring), 3)
+	assert.Equal(f.Hiring.First().String(), "https://example.com")
 }
