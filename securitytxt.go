@@ -20,9 +20,6 @@ type SecurityTxt struct {
 	Policy             URLSet
 	PreferredLanguages []iso6391.Language
 
-	// Conformance flag according to RFC 9116
-	IsValid bool
-
 	// Contains parsing errors. For example, if the file is missing the "Contact:" field, an error will be stored here.
 	Errors []error
 }
