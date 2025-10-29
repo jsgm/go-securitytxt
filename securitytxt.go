@@ -14,7 +14,7 @@ type SecurityTxt struct {
 	Acknowledgments    URLSet
 	Canonical          URLSet
 	Contact            []Contact
-	Encryption         []string
+	Encryption         []Encryption
 	Expires            *time.Time
 	Hiring             URLSet
 	Policy             URLSet
