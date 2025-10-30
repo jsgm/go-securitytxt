@@ -1,5 +1,7 @@
 package securitytxt
 
+import "fmt"
+
 type Encryption struct {
 	Source   EncryptionSource
 	RawValue string
@@ -16,8 +18,19 @@ const (
 	EncryptionSourceUnknown     EncryptionSource = "unknown"     //
 )
 
-// TO-DO:
-// -----BEGIN PGP SIGNED MESSAGE-----
-// Hash: SHA256
-// -----BEGIN PGP SIGNATURE-----
-// -----END PGP SIGNATURE-----
+// TODO: Verify that the message is correctly signed
+
+func (e *Encryption) FetchKey() (string, error) {
+	switch e.Source {
+	case EncryptionSourceHTTPS:
+		//return downloadHTTPSKey(e.RawValue)
+	case EncryptionSourceDNS:
+		//return fetchDNSOpenPGPKey(e.RawValue)
+	case EncryptionSourceOpenPGP4FPR:
+		//return downloadKeyFromFingerprint(e.RawValue)
+	default:
+		return "", fmt.Errorf("unknown encryption source: %s", e.RawValue)
+	}
+
+	return "", nil
+}
