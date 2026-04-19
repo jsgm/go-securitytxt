@@ -29,4 +29,13 @@ func TestContact(t *testing.T) {
 	assert.True(f.Contact[1].IsURL())
 	assert.True(f.Contact[2].IsPhone())
 	assert.True(f.Contact[3].IsUnknown())
+
+	f, _ = FromString(`
+		Contact: 
+		Hiring: https://example.com/hiring
+	`)
+
+	c, e = f.PreferredContact()
+
+	assert.False(c.Valid())
 }
